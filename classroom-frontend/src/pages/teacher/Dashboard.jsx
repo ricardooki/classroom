@@ -1,35 +1,36 @@
-import React from 'react'
-import Loading from './../../components/student/Loading';
-import { assets } from './../../assets/assets';
-import { useContext, useState } from 'react';
-import { AppContext } from './../../context/AppContext';
-import { useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react'
+import { assets } from '../../assets/assets'
+import { AppContext } from '../../context/AppContext';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import Loading from '../../components/student/Loading';
 
 const Dashboard = () => {
+
   const { backendUrl, isEducator, currency, getToken } = useContext(AppContext)
+
   const [dashboardData, setDashboardData] = useState(null)
 
-  
   const fetchDashboardData = async () => {
     try {
 
       const token = await getToken()
 
-      // const { data } = await axios.get(backendUrl + '/api/educator/dashboard',
-      //   { headers: { Authorization: `Bearer ${token}` } }
-      // )
+      const { data } = await axios.get(backendUrl + '/api/educator/dashboard',
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
 
-      // if (data.success) {
-        setDashboardData(dummyDashboardData)
-      // } else {
-      //   toast.error(data.message)
-      // }
+      if (data.success) {
+        setDashboardData(data.dashboardData)
+      } else {
+        toast.error(data.message)
+      }
 
     } catch (error) {
       toast.error(error.message)
     }
   }
-  
+
   useEffect(() => {
 
     if (isEducator) {
@@ -144,6 +145,5 @@ const Dashboard = () => {
     </div>
   ) : <Loading />
 }
-
 
 export default Dashboard
