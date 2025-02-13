@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 import { useAuth, useUser } from "@clerk/clerk-react";
 
+
 export const AppContext = createContext();
 
 // eslint-disable-next-line react/prop-types
@@ -12,6 +13,8 @@ export const AppContextProvider = (props) => {
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
   const { getToken } = useAuth()
+  const { user } = useUser()
+
   const [allCourses, setAllCourses] = useState([]);
   const [isEducator, setIsEducator] = useState(true);
   const [enrolledCourses, setEnrolledCourses] = useState([])
@@ -21,10 +24,14 @@ export const AppContextProvider = (props) => {
     setAllCourses(dummyCourses);
   };
 
+  const logToken = async () => {
+    console.log(await getToken());
+  }
+
   const fetchUserEnrolledCourses = async () => {
 
     setEnrolledCourses(dummyStudentEnrolled);
-    // const token = await getToken();
+    const token = await getToken();
 
     // const { data } = await axios.get(backendUrl + '/api/user/enrolled-courses',
     //     { headers: { Authorization: `Bearer ${token}` } })
@@ -84,12 +91,13 @@ export const AppContextProvider = (props) => {
     fetchUserEnrolledCourses();
   }, []);
 
-//   useEffect(() => {
-//     if (user) {
-//         fetchUserData()
-//         fetchUserEnrolledCourses()
-//     }
-// }, [user])
+  useEffect(() => {
+    if (user) {
+      logToken()
+        // fetchUserData()
+        // fetchUserEnrolledCourses()
+    }
+}, [user])
 
   const value = {
     currency,
